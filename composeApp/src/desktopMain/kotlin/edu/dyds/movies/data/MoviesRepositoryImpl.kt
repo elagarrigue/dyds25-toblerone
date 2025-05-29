@@ -5,11 +5,12 @@ import edu.dyds.movies.data.external.RemoteResult
 import edu.dyds.movies.domain.repository.MoviesRepository
 
 
-class MoviesRepositoryImpl (private val cachedMovies: LocalMoviesInterface,private val remoteManager: RemoteMoviesInterface) : MoviesRepository {
+class MoviesRepositoryImpl (private val cachedMovies: LocalMovies, private val remoteManager: TMDBMovie) : MoviesRepository {
 
     override suspend fun getPopularMovies(): List<Movie> {
         if (cachedMovies.isEmpty()) {
             val remoteResult: RemoteResult = remoteManager.getTMDBPopularMovies()
+            //TODO preguntar si es correcto el uso de remoteresult y si es correcto mover remoteMovie
             cachedMovies.addAll(remoteResult.results)
         }
             return cachedMovies.getCacheMovies().map { it.toDomainMovie() }

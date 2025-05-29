@@ -1,11 +1,11 @@
 package edu.dyds.movies.data.external
 
-import edu.dyds.movies.data.RemoteMoviesInterface
+import edu.dyds.movies.data.TMDBMovie
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 
-class RemoteMoviesImpl(private val tmdbHttpClient: HttpClient) : RemoteMoviesInterface {
+class TMDBMovieImpl(private val tmdbHttpClient: HttpClient) : TMDBMovie {
 
     override suspend fun getTMDBPopularMovies(): RemoteResult =
         tmdbHttpClient.get("/3/discover/movie?sort_by=popularity.desc").body()
