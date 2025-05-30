@@ -10,10 +10,9 @@ class MoviesRepositoryImpl (private val cachedMovies: LocalMovies, private val r
     override suspend fun getPopularMovies(): List<Movie> {
         if (cachedMovies.isEmpty()) {
             val remoteResult: RemoteResult = remoteManager.getTMDBPopularMovies()
-            //TODO preguntar si es correcto el uso de remoteresult y si es correcto mover remoteMovie
             cachedMovies.addAll(remoteResult.results)
         }
-            return cachedMovies.getCacheMovies().map { it.toDomainMovie() }
+            return cachedMovies.getCacheMovies()
 
     }
 
