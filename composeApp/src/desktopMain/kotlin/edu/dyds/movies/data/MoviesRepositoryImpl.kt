@@ -1,24 +1,25 @@
 package edu.dyds.movies.data
 
+import edu.dyds.movies.data.external.MoviesRemoteSource
 import edu.dyds.movies.domain.entity.Movie
 import edu.dyds.movies.data.external.RemoteResult
 import edu.dyds.movies.domain.repository.MoviesRepository
 
 
-class MoviesRepositoryImpl (private val cachedMovies: LocalMovies, private val remoteManager: TMDBMovie) : MoviesRepository {
+class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, private val moviesRemoteSource: MoviesRemoteSource) : MoviesRepository {
 
     override suspend fun getPopularMovies(): List<Movie> {
-        if (cachedMovies.isEmpty()) {
-            val remoteResult: RemoteResult = remoteManager.getTMDBPopularMovies()
-            cachedMovies.addAll(remoteResult.results)
+        if (moviesLocalSource.isEmpty()) {
+            val remoteResult: RemoteResult = moviesRemoteSource.getTMDBPopularMovies()
+            moviesLocalSource.addAll(remoteResult.results)
         }
-            return cachedMovies.getCacheMovies()
+            return moviesLocalSource.getCacheMovies()
 
     }
 
     override suspend fun getMovieDetails(id: Int): Movie? {
         return try{
-            remoteManager.getTMDBMovieDetails(id).toDomainMovie()
+            moviesRemoteSource.getTMDBMovieDetails(id).toDomainMovie()
         } catch (e: Exception) {
             null
         }

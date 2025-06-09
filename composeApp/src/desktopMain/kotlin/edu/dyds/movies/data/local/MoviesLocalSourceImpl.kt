@@ -1,10 +1,10 @@
 package edu.dyds.movies.data.local
 
-import edu.dyds.movies.data.LocalMovies
+import edu.dyds.movies.data.MoviesLocalSource
 import edu.dyds.movies.data.external.RemoteMovie
 import edu.dyds.movies.domain.entity.Movie
 
-class LocalMoviesImpl : LocalMovies{
+class MoviesLocalSourceImpl : MoviesLocalSource{
      private val cacheMovies: MutableList<Movie> = mutableListOf()
 
     override fun addAll(movies: List<RemoteMovie>) {

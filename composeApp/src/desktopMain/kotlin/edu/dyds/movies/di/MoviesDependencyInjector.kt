@@ -3,8 +3,8 @@ package edu.dyds.movies.di
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.dyds.movies.data.MoviesRepositoryImpl
-import edu.dyds.movies.data.external.TMDBMovieImpl
-import edu.dyds.movies.data.local.LocalMoviesImpl
+import edu.dyds.movies.data.external.MoviesRemoteSourceImpl
+import edu.dyds.movies.data.local.MoviesLocalSourceImpl
 import edu.dyds.movies.presentation.detail.DetailViewModel
 import edu.dyds.movies.presentation.home.HomeViewModel
 import edu.dyds.movies.domain.usecase.GetMovieDetailsUseCase
@@ -40,8 +40,8 @@ object MoviesDependencyInjector {
             }
         }
 
-    private val remoteManager = TMDBMovieImpl(tmdbHttpClient)
-    private val cachedMovies = LocalMoviesImpl()
+    private val remoteManager = MoviesRemoteSourceImpl(tmdbHttpClient)
+    private val cachedMovies = MoviesLocalSourceImpl()
     private val moviesRepository: MoviesRepository = MoviesRepositoryImpl(cachedMovies,remoteManager)
     private val getPopularMoviesUseCase = GetPopularMoviesUseCase(moviesRepository)
     private val getMovieDetailsUseCase = GetMovieDetailsUseCase(moviesRepository)
