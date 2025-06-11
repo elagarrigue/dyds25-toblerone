@@ -17,11 +17,7 @@ class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, pr
             moviesLocalSource.getCacheMovies()
         } catch (e: Exception) {
             println("Error fetching popular movies: ${e.message}")
-            if (!moviesLocalSource.isEmpty()) {
-                moviesLocalSource.getCacheMovies()
-            } else {
-                emptyList()
-            }
+            emptyList()
         }
     }
 
