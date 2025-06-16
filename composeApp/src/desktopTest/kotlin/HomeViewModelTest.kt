@@ -62,36 +62,13 @@ class HomeViewModelTest {
 
         job.cancel()
     }
-
-    @Test
-    fun `getPopularMovies maneja excepcion correctamente`() = runTest {
-        //arrange
-        fakePopularMoviesUseCase.setDelayTime(1000L) // Simular un retraso
-        fakePopularMoviesUseCase.setMovies(emptyList()) // No devolver peliculas
-        val states = mutableListOf<HomeViewModel.MoviesUiState>()
-
-        //act
-        val job = launch {
-            homeViewModel.moviesStateFlow.collect { state ->
-                states.add(state)
-            }
-        }
-        homeViewModel.getPopularMovies()
-        advanceUntilIdle()
-
-        //assert
-        assertTrue(states.size == 1)
-        val finalState = states.last()
-        assertFalse(finalState.isLoading)
-        assertTrue(finalState.movies.isEmpty())
-
-        job.cancel()
-    }
+    
 
     //TODO consultar si esta bien
     @Test
     fun `getPopularMovies maneja lista vacia correctamente`() = runTest {
         //arrange
+        //fakePopularMoviesUseCase.setDelayTime(1000L)
         fakePopularMoviesUseCase.setMovies(emptyList())
         val states = mutableListOf<HomeViewModel.MoviesUiState>()
 
@@ -105,7 +82,7 @@ class HomeViewModelTest {
         advanceUntilIdle()
 
         //assert
-        assertTrue(states.size >= 1)
+        assertTrue(states.size == 1)
         val finalState = states.last()
         assertFalse(finalState.isLoading)
         assertTrue(finalState.movies.isEmpty())
