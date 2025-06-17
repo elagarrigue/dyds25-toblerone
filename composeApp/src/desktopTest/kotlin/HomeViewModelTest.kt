@@ -1,11 +1,12 @@
 import edu.dyds.movies.domain.entity.*
 import edu.dyds.movies.domain.usecase.PopularMoviesUseCase
 import edu.dyds.movies.presentation.home.HomeViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,6 +21,11 @@ class HomeViewModelTest {
         fakePopularMoviesUseCase = FakePopularMoviesUseCase()
         homeViewModel = HomeViewModel(fakePopularMoviesUseCase)
         fakePopularMoviesUseCase.reset()
+    }
+
+    @AfterEach
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -59,6 +65,35 @@ class HomeViewModelTest {
         assertEquals(2, finalState.movies.size, "Final state should have 2 movies")
         assertEquals("Movie 1", finalState.movies[0].movie.title, "First movie title should match")
         assertEquals("Movie 2", finalState.movies[1].movie.title, "Second movie title should match")
+
+        job.cancel()
+    }
+
+    @Test
+    fun `getPopularMovies emite estado de carga correctamente`() = runTest {
+        //arrange
+        fakePopularMoviesUseCase.setDelayTime(500L)
+        val states = mutableListOf<HomeViewModel.MoviesUiState>()
+
+        //act
+        val job = launch {
+            homeViewModel.moviesStateFlow.collect { state ->
+                states.add(state)
+            }
+        }
+        homeViewModel.getPopularMovies()
+
+        val startTime = System.currentTimeMillis()
+        while (states.size < 2 && System.currentTimeMillis() - startTime < 2000) {
+            delay(10)
+        }
+
+        //assert
+        println("States collected: ${states.size}")
+        println("States: $states")
+        assertTrue(states.size >= 2, "Expected at least 2 states but got ${states.size}")
+        assertTrue(states[0].isLoading, "First state should be loading")
+        assertFalse(states.last().isLoading, "Final state should not be loading")
 
         job.cancel()
     }
