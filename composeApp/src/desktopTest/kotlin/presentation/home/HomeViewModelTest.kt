@@ -1,3 +1,5 @@
+package presentation.home
+
 import edu.dyds.movies.domain.entity.*
 import edu.dyds.movies.domain.usecase.PopularMoviesUseCase
 import edu.dyds.movies.presentation.home.HomeViewModel
@@ -20,7 +22,6 @@ class HomeViewModelTest {
     fun setUp() {
         fakePopularMoviesUseCase = FakePopularMoviesUseCase()
         homeViewModel = HomeViewModel(fakePopularMoviesUseCase)
-        fakePopularMoviesUseCase.reset()
     }
 
     @AfterEach
@@ -34,7 +35,7 @@ class HomeViewModelTest {
         val initialState = homeViewModel.moviesStateFlow.first()
 
         //assert
-        assertFalse(initialState.isLoading)
+        assertTrue(initialState.isLoading)
         assertTrue(initialState.movies.isEmpty())
     }
 
@@ -72,7 +73,6 @@ class HomeViewModelTest {
     @Test
     fun `getPopularMovies emite estado de carga correctamente`() = runTest {
         //arrange
-        fakePopularMoviesUseCase.setDelayTime(500L)
         val states = mutableListOf<HomeViewModel.MoviesUiState>()
 
         //act
@@ -82,28 +82,18 @@ class HomeViewModelTest {
             }
         }
         homeViewModel.getPopularMovies()
-
-        val startTime = System.currentTimeMillis()
-        while (states.size < 2 && System.currentTimeMillis() - startTime < 2000) {
-            delay(10)
-        }
+        advanceUntilIdle()
 
         //assert
-        println("States collected: ${states.size}")
-        println("States: $states")
-        assertTrue(states.size >= 2, "Expected at least 2 states but got ${states.size}")
-        assertTrue(states[0].isLoading, "First state should be loading")
-        assertFalse(states.last().isLoading, "Final state should not be loading")
+        assertTrue(states.size == 1)
+        assertFalse(states[0].isLoading, "First state should not be loading")
 
         job.cancel()
     }
     
-
-    //TODO consultar si esta bien
     @Test
     fun `getPopularMovies maneja lista vacia correctamente`() = runTest {
         //arrange
-        //fakePopularMoviesUseCase.setDelayTime(1000L)
         fakePopularMoviesUseCase.setMovies(emptyList())
         val states = mutableListOf<HomeViewModel.MoviesUiState>()
 
@@ -156,24 +146,12 @@ class HomeViewModelTest {
 
     class FakePopularMoviesUseCase : PopularMoviesUseCase{
         private var movies : List<QualifiedMovie> = emptyList()
-        private var delayTime = 0L
 
         fun setMovies(movies: List<QualifiedMovie>) {
             this.movies = movies
         }
 
-        fun setDelayTime(delayTime: Long) {
-            this.delayTime = delayTime
-        }
-        fun reset() {
-            movies = emptyList()
-            delayTime = 0L
-        }
-
         override suspend operator fun invoke(): List<QualifiedMovie> {
-            if(delayTime > 0L) {
-                kotlinx.coroutines.delay(delayTime)
-            }
             return movies
         }
     }

@@ -1,3 +1,5 @@
+package domain.usecase
+
 import edu.dyds.movies.domain.entity.Movie
 import edu.dyds.movies.domain.repository.MoviesRepository
 import edu.dyds.movies.domain.usecase.GetMovieDetailsUseCase
@@ -5,7 +7,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class GetMovieDetailsUseCaseTest {
 
@@ -40,20 +41,11 @@ class GetMovieDetailsUseCaseTest {
     }
 
 
-    //TODO preguntar si cuando no se encuentra una pelicula se lanza una excepcion o se devuelve nulo
     @Test
     fun `caso de uso con id invalida retorna nulo`() = runTest {
         val result = getMovieDetailsUseCase(999)
         assertNull(result)
     }
-
-    /*
-    @Test
-    fun `caso de uso con id no existente lanza excepcion`() = runTest {
-        assertThrows<RuntimeException> {
-            getMovieDetailsUseCase(500)
-        }
-    }*/
 
     class FakeMoviesRepository : MoviesRepository {
         private val movies = mutableMapOf<Int, Movie>()

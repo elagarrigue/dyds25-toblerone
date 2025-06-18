@@ -1,3 +1,5 @@
+package domain.usecase
+
 import edu.dyds.movies.domain.entity.Movie
 import edu.dyds.movies.domain.repository.MoviesRepository
 import edu.dyds.movies.domain.usecase.GetPopularMoviesUseCase
@@ -105,8 +107,6 @@ class GetPopularMoviesUseCaseTest {
         assertEquals(7.0, result[2].movie.voteAverage)
         assertTrue(result.all { it.isGoodMovie })
     }
-
-    //TODO preguntar en que caso se puede dar una excepcion en el repositorio y como manejarlo
 
     private fun createMovie(
         id: Int,

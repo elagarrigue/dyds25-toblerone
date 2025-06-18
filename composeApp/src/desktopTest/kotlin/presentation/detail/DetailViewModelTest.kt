@@ -1,17 +1,12 @@
+package presentation.detail
+
 import edu.dyds.movies.domain.entity.Movie
-import edu.dyds.movies.domain.usecase.GetMovieDetailsUseCase
 import edu.dyds.movies.domain.usecase.MovieDetailsUseCase
 import edu.dyds.movies.presentation.detail.DetailViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.test.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -21,10 +16,8 @@ import org.junit.jupiter.api.Test
 class DetailViewModelTest {
 
     val testDispatcher = UnconfinedTestDispatcher()
-    val testScope = CoroutineScope(testDispatcher)
     private val getMovieDetailsUseCase = object : MovieDetailsUseCase {
         override suspend fun invoke(id: Int): Movie? {
-            kotlinx.coroutines.delay(999)
             return if (id==1)
                 Movie(
                     id,
@@ -67,15 +60,9 @@ class DetailViewModelTest {
 
         // Act
         detailViewModel.getMovieDetails(1)
-
-        withTimeout(2000) {
-            while (events.size < 2) {
-                delay(10)
-            }
-        }
+        advanceUntilIdle()
 
         // Assert
-        assertEquals(DetailViewModel.MovieDetailUiState(true, null), events[0])
         assertEquals(
             DetailViewModel.MovieDetailUiState(
                 false,
@@ -92,7 +79,7 @@ class DetailViewModelTest {
                     8.0
                 )
             ),
-            events[1]
+            events[0]
         )
         job.cancel()
     }
@@ -108,16 +95,10 @@ class DetailViewModelTest {
         }
         // Act
         detailViewModel.getMovieDetails(3)
-
-        withTimeout(2000) {
-            while (events.size < 2) {
-                delay(10)
-            }
-        }
+        advanceUntilIdle()
 
         // Assert
-        assertEquals(DetailViewModel.MovieDetailUiState(true, null), events[0])
-        assertEquals(DetailViewModel.MovieDetailUiState(false, null), events[1])
+        assertEquals(DetailViewModel.MovieDetailUiState(false, null), events[0])
         job.cancel()
     }
 }

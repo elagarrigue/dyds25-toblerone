@@ -14,9 +14,6 @@ class DetailViewModel (private val getMovieDetailsUseCase: MovieDetailsUseCase) 
 
     fun getMovieDetails(id: Int) {
         viewModelScope.launch {
-            movieDetailStateMutableStateFlow.emit(
-                MovieDetailUiState(isLoading = true)
-            )
             val movie = getMovieDetailsUseCase(id)
             movieDetailStateMutableStateFlow.emit(
                 MovieDetailUiState(
@@ -28,7 +25,7 @@ class DetailViewModel (private val getMovieDetailsUseCase: MovieDetailsUseCase) 
     }
 
     data class MovieDetailUiState(
-        val isLoading: Boolean = false,
+        val isLoading: Boolean = true,
         val movie: Movie? = null,
     )
 }

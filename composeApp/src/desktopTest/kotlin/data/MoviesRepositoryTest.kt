@@ -1,3 +1,5 @@
+package data
+
 import edu.dyds.movies.data.MoviesRepositoryImpl
 import edu.dyds.movies.data.external.MoviesRemoteSource
 import edu.dyds.movies.data.local.MoviesLocalSource
@@ -46,7 +48,6 @@ class MoviesRepositoryTest {
         val resultEmptySources = repository.getPopularMovies()
         //assert
         assertEquals(emptyList<Movie>(), resultEmptySources)
-        //TODO revisar por que no tira el error o por que no lo podemos leer
     }
     @Test
     fun `getDetails normal`()=runTest{
@@ -61,7 +62,6 @@ class MoviesRepositoryTest {
         val movieNull = repository.getMovieDetails(500)
         //assert
         assertEquals(null, movieNull)
-        //TODO revisar por que no tira el error o por que no lo podemos leer
     }
 }
 
@@ -73,7 +73,7 @@ class FakeMoviesRemoteSource: MoviesRemoteSource{
     }
 
     override suspend fun getTMDBPopularMovies(): List<Movie> {
-        if (!remoteMovies.isEmpty())
+        if (remoteMovies.isNotEmpty())
             return remoteMovies
         throw Exception()
     }
