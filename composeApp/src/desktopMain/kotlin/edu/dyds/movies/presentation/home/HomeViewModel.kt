@@ -17,9 +17,6 @@ class HomeViewModel (private val getPopularMoviesUseCase: PopularMoviesUseCase):
     fun getPopularMovies() {
         viewModelScope.launch {
             moviesStateMutableStateFlow.emit(
-                MoviesUiState(isLoading = true)
-            )
-            moviesStateMutableStateFlow.emit(
                 MoviesUiState(
                     isLoading = false,
                     movies = getPopularMoviesUseCase()
@@ -29,7 +26,7 @@ class HomeViewModel (private val getPopularMoviesUseCase: PopularMoviesUseCase):
     }
 
     data class MoviesUiState(
-        val isLoading: Boolean = false,
+        val isLoading: Boolean = true,
         val movies: List<QualifiedMovie> = emptyList(),
     )
 
