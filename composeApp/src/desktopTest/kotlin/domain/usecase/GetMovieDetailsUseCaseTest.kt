@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.collections.set
 
 class GetMovieDetailsUseCaseTest {
 
@@ -53,18 +54,22 @@ class GetMovieDetailsUseCaseTest {
     }
 
     class FakeMoviesRepository : MoviesRepository {
-        private val movies = mutableMapOf<Int, Movie>()
+        private var movies: MutableList<Movie> = mutableListOf()
+
+        fun setMovies(movies: MutableList<Movie>) {
+            this.movies = movies
+        }
 
         override suspend fun getPopularMovies(): List<Movie> {
-            return movies.values.toList()
+            return movies
         }
 
         override suspend fun getMovieDetails(id: Int): Movie? {
-            return movies[id]
+            return movies.find { it.id == id }
         }
 
         fun addMovie(movie: Movie) {
-            movies[movie.id] = movie
+            movies.add(movie)
         }
     }
 }

@@ -1,7 +1,7 @@
 package domain.usecase
 
 import edu.dyds.movies.domain.entity.Movie
-import edu.dyds.movies.domain.repository.MoviesRepository
+import domain.usecase.GetMovieDetailsUseCaseTest.FakeMoviesRepository
 import edu.dyds.movies.domain.usecase.GetPopularMoviesUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
@@ -21,7 +21,7 @@ class GetPopularMoviesUseCaseTest {
     @Test
     fun `caso de uso debe retornar lista de peliculas ordenada en descendente segun puntaje`() = runTest {
         // arrange
-        val movies = listOf(
+        val movies = mutableListOf(
             createMovie(id = 1, title = "Movie 1", voteAverage = 7.5),
             createMovie(id = 2, title = "Movie 2", voteAverage = 8.2),
             createMovie(id = 3, title = "Movie 3", voteAverage = 6.8)
@@ -44,7 +44,7 @@ class GetPopularMoviesUseCaseTest {
     @Test
     fun `caso de uso califica correctamente pelicula segun puntaje`() = runTest {
         //arrange
-        val movies = listOf(
+        val movies = mutableListOf(
             createMovie(id = 1, title = "Good Movie", voteAverage = 7.0),
             createMovie(id = 2, title = "Exactly 6.0", voteAverage = 6.0),
             createMovie(id = 3, title = "Bad Movie", voteAverage = 5.9)
@@ -64,7 +64,7 @@ class GetPopularMoviesUseCaseTest {
     @Test
     fun `caso de uso con lista de peliculas vacia`() = runTest{
         //arrange
-        val emptyList = emptyList<Movie>()
+        val emptyList: MutableList<Movie> = mutableListOf()
         fakeMoviesRepository.setMovies(emptyList)
 
         //act
@@ -77,7 +77,7 @@ class GetPopularMoviesUseCaseTest {
     @Test
     fun `caso de uso con una sola pelicula`() = runTest {
         // arrange
-        val singleMovieList = listOf(createMovie(id = 1, title = "Single Movie", voteAverage = 7.0))
+        val singleMovieList = mutableListOf(createMovie(id = 1, title = "Single Movie", voteAverage = 7.0))
         fakeMoviesRepository.setMovies(singleMovieList)
 
         // act
@@ -92,7 +92,7 @@ class GetPopularMoviesUseCaseTest {
     @Test
     fun `caso de uso con peliculas con puntajes iguales`() = runTest {
         // arrange
-        val movies = listOf(
+        val movies = mutableListOf(
             createMovie(id = 1, title = "Movie A", voteAverage = 7.0),
             createMovie(id = 2, title = "Movie B", voteAverage = 7.0),
             createMovie(id = 3, title = "Movie C", voteAverage = 8.0)
@@ -134,19 +134,4 @@ class GetPopularMoviesUseCaseTest {
         voteAverage = voteAverage
     )
 
-    class FakeMoviesRepository : MoviesRepository {
-        private var movies: List<Movie> = emptyList()
-
-        fun setMovies(movies: List<Movie>) {
-            this.movies = movies
-        }
-
-        override suspend fun getPopularMovies(): List<Movie> {
-            return movies
-        }
-
-        override suspend fun getMovieDetails(id: Int): Movie? {
-            return movies.find { it.id == id }
-        }
-    }
 }

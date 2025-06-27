@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
+
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var fakePopularMoviesUseCase: FakePopularMoviesUseCase
 
