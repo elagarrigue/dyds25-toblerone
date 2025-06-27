@@ -21,6 +21,7 @@ class GetMovieDetailsUseCaseTest {
 
     @Test
     fun `caso de uso con id valida devuelve detalles de pelicula`() = runTest {
+        //arrange
         val expectedMovie = Movie(
             1,
             "Test Movie",
@@ -35,15 +36,19 @@ class GetMovieDetailsUseCaseTest {
         )
         fakeMoviesRepository.addMovie(expectedMovie)
 
+        //act
         val result = getMovieDetailsUseCase.invoke(1)
 
+        //assert
         assertEquals(expectedMovie, result)
     }
 
-
     @Test
     fun `caso de uso con id invalida retorna nulo`() = runTest {
+        //act
         val result = getMovieDetailsUseCase(999)
+
+        //assert
         assertNull(result)
     }
 

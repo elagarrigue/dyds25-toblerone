@@ -93,12 +93,19 @@ class DetailViewModelTest {
                 events.add(state)
             }
         }
+
         // Act
         detailViewModel.getMovieDetails(3)
         advanceUntilIdle()
 
         // Assert
-        assertEquals(DetailViewModel.MovieDetailUiState(false, null), events[0])
+        assertEquals(
+            DetailViewModel.MovieDetailUiState(
+                false,
+                null
+            ),
+            events[0]
+        )
         job.cancel()
     }
 }

@@ -43,8 +43,18 @@ class HomeViewModelTest {
     fun `getPopularMovies emite estado final con peliculas`() = runTest {
         //arrange
         val expectedMovies = listOf(
-            createQualifiedMovie(1, "Movie 1", 7.5, true),
-            createQualifiedMovie(2, "Movie 2", 6.0, true)
+            createQualifiedMovie(
+                1,
+                "Movie 1",
+                7.5,
+                true
+            ),
+            createQualifiedMovie(
+                2,
+                "Movie 2",
+                6.0,
+                true
+            )
         )
         fakePopularMoviesUseCase.setMovies(expectedMovies)
         val states = mutableListOf<HomeViewModel.MoviesUiState>()
@@ -62,10 +72,25 @@ class HomeViewModelTest {
         assertEquals(1, states.size, "Expected exactly 1 state but got ${states.size}")
 
         val finalState = states[0]
-        assertFalse(finalState.isLoading, "Final state should not be loading")
-        assertEquals(2, finalState.movies.size, "Final state should have 2 movies")
-        assertEquals("Movie 1", finalState.movies[0].movie.title, "First movie title should match")
-        assertEquals("Movie 2", finalState.movies[1].movie.title, "Second movie title should match")
+        assertFalse(
+            finalState.isLoading,
+            "Final state should not be loading"
+        )
+        assertEquals(
+            2,
+            finalState.movies.size,
+            "Final state should have 2 movies"
+        )
+        assertEquals(
+            "Movie 1",
+            finalState.movies[0].movie.title,
+            "First movie title should match"
+        )
+        assertEquals(
+            "Movie 2",
+            finalState.movies[1].movie.title,
+            "Second movie title should match"
+        )
 
         job.cancel()
     }
@@ -86,11 +111,14 @@ class HomeViewModelTest {
 
         //assert
         assertTrue(states.size == 1)
-        assertFalse(states[0].isLoading, "First state should not be loading")
+        assertFalse(
+            states[0].isLoading,
+            "First state should not be loading"
+        )
 
         job.cancel()
     }
-    
+
     @Test
     fun `getPopularMovies maneja lista vacia correctamente`() = runTest {
         //arrange
@@ -114,7 +142,7 @@ class HomeViewModelTest {
 
         job.cancel()
     }
-    
+
     private fun createQualifiedMovie(
         id: Int,
         title: String,
@@ -143,9 +171,8 @@ class HomeViewModelTest {
         isGoodMovie = isGoodMovie
     )
 
-
-    class FakePopularMoviesUseCase : PopularMoviesUseCase{
-        private var movies : List<QualifiedMovie> = emptyList()
+    class FakePopularMoviesUseCase : PopularMoviesUseCase {
+        private var movies: List<QualifiedMovie> = emptyList()
 
         fun setMovies(movies: List<QualifiedMovie>) {
             this.movies = movies
@@ -155,5 +182,4 @@ class HomeViewModelTest {
             return movies
         }
     }
-
 }

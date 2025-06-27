@@ -13,55 +13,116 @@ import org.junit.jupiter.api.Test
 class MoviesRepositoryTest {
 
     private lateinit var repository: MoviesRepositoryImpl
-    private lateinit var fakeLocalSource: MoviesLocalSource
+    private lateinit var localSource: MoviesLocalSource
     private lateinit var fakeRemoteSource: FakeMoviesRemoteSource
 
     @BeforeEach
     fun `set Up`(){
-        fakeLocalSource= MoviesLocalSourceImpl()
+        localSource= MoviesLocalSourceImpl()
         fakeRemoteSource= FakeMoviesRemoteSource()
-        repository= MoviesRepositoryImpl(fakeLocalSource,fakeRemoteSource)
+        repository= MoviesRepositoryImpl(localSource,fakeRemoteSource)
     }
+
     @Test
     fun `getPopular with cache full`() = runTest{
         //arrange
-        fakeLocalSource.addAll(listOf(Movie(1, "cached", "", "", "", "", "", "", 0.0, 0.0)))
+        localSource.addAll(
+            listOf(
+                Movie(1,
+                    "cached",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    0.0,
+                    0.0
+                )
+            )
+        )
+
         //act
         val movies = repository.getPopularMovies()
+
         //assert
-        assertEquals(1, movies.size)
-        assertEquals("cached", movies[0].title)
+        assertEquals(
+            1,
+            movies.size
+        )
+        assertEquals(
+            "cached",
+            movies[0].title
+        )
     }
+
     @Test
     fun `getPopular with cache empty`() = runTest{
         //arrange
-        fakeRemoteSource.addToList(listOf(Movie(1, "remote", "", "", "", "", "", "", 0.0, 0.0)))
+        fakeRemoteSource.addToList(
+            listOf(
+                Movie(1,
+                    "remote",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    0.0,
+                    0.0
+                )
+            )
+        )
+
         //act
         val movies = repository.getPopularMovies()
+
         //assert
-        assertEquals(1, movies.size)
-        assertEquals("remote", movies[0].title)
+        assertEquals(
+            1,
+            movies.size
+        )
+        assertEquals(
+            "remote",
+            movies[0].title
+        )
     }
+
     @Test
     fun `getPopular  error`() = runTest{
         //act
         val resultEmptySources = repository.getPopularMovies()
+
         //assert
-        assertEquals(emptyList<Movie>(), resultEmptySources)
+        assertEquals(
+            emptyList<Movie>(),
+            resultEmptySources
+        )
     }
+
     @Test
     fun `getDetails normal`()=runTest{
         //act
         val resultMovie = repository.getMovieDetails(1)
+
         //assert
-        assertEquals("m1", resultMovie?.title)
+        assertEquals(
+            "m1",
+            resultMovie?.title
+        )
     }
+
     @Test
     fun `getDetails error`() = runTest {
         //act
         val movieNull = repository.getMovieDetails(500)
+
         //assert
-        assertEquals(null, movieNull)
+        assertEquals(
+            null,
+            movieNull
+        )
     }
 }
 

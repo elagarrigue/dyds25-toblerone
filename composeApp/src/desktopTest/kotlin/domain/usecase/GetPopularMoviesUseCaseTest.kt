@@ -66,8 +66,10 @@ class GetPopularMoviesUseCaseTest {
         //arrange
         val emptyList = emptyList<Movie>()
         fakeMoviesRepository.setMovies(emptyList)
+
         //act
         val result = getPopularMoviesUseCase()
+
         //assert
         assertTrue(result.isEmpty())
     }
@@ -131,7 +133,6 @@ class GetPopularMoviesUseCaseTest {
         popularity = popularity,
         voteAverage = voteAverage
     )
-
 
     class FakeMoviesRepository : MoviesRepository {
         private var movies: List<Movie> = emptyList()
