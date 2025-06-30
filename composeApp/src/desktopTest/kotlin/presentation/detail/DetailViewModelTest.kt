@@ -18,7 +18,7 @@ class DetailViewModelTest {
     val testDispatcher = UnconfinedTestDispatcher()
     private val getMovieDetailsUseCase = object : MovieDetailsUseCase {
         override suspend fun invoke(id: Int): Movie? {
-            return if (id==1)
+            return if (id == 1)
                 Movie(
                     id,
                     "Movie $id",

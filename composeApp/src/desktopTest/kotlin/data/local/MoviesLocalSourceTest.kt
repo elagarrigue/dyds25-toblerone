@@ -11,14 +11,14 @@ class MoviesLocalSourceTest {
     private lateinit var localMovies: MoviesLocalSource
 
     @BeforeEach
-    fun `set Up`(){
-        localMovies= MoviesLocalSourceImpl()
+    fun `set Up`() {
+        localMovies = MoviesLocalSourceImpl()
     }
 
     @Test
-    fun `adding Empty List`(){
+    fun `adding Empty List`() {
         //arrange
-        val empty=emptyList<Movie>()
+        val empty = emptyList<Movie>()
 
         //act
         localMovies.addAll(empty)
@@ -31,9 +31,9 @@ class MoviesLocalSourceTest {
     }
 
     @Test
-    fun `adding Full List`(){
+    fun `adding Full List`() {
         //arrange
-        val movie1= Movie(
+        val movie1 = Movie(
             1,
             "m1",
             "x",
@@ -45,7 +45,7 @@ class MoviesLocalSourceTest {
             7.0,
             8.0
         )
-        val movie2= Movie(
+        val movie2 = Movie(
             1,
             "m2",
             "x",
@@ -57,7 +57,7 @@ class MoviesLocalSourceTest {
             7.0,
             8.0
         )
-        val full=listOf<Movie>(movie1,movie2)
+        val full = listOf<Movie>(movie1, movie2)
 
         //act
         localMovies.addAll(full)
@@ -70,9 +70,9 @@ class MoviesLocalSourceTest {
     }
 
     @Test
-    fun `is Empty True`(){
+    fun `is Empty True`() {
         //arrange
-        val empty=emptyList<Movie>()
+        val empty = emptyList<Movie>()
 
         //act
         localMovies.addAll(empty)
@@ -85,9 +85,9 @@ class MoviesLocalSourceTest {
     }
 
     @Test
-    fun `is Empty False`(){
+    fun `is Empty False`() {
         //arrange
-        val movie1= Movie(
+        val movie1 = Movie(
             1,
             "m1",
             "x",
@@ -99,7 +99,7 @@ class MoviesLocalSourceTest {
             7.0,
             8.0
         )
-        val movie2= Movie(
+        val movie2 = Movie(
             1,
             "m2",
             "x",
@@ -111,7 +111,7 @@ class MoviesLocalSourceTest {
             7.0,
             8.0
         )
-        val full=listOf<Movie>(movie1,movie2)
+        val full = listOf<Movie>(movie1, movie2)
 
         //act
         localMovies.addAll(full)

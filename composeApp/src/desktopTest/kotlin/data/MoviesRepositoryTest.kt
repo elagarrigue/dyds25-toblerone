@@ -16,7 +16,7 @@ class MoviesRepositoryTest {
     private lateinit var fakeRemoteSource: FakeMoviesRemoteSource
 
     @BeforeEach
-    fun `set up`(){
+    fun `set up`() {
         fakeLocalSource = FakeMoviesLocalSource()
         fakeRemoteSource = FakeMoviesRemoteSource()
         repository = MoviesRepositoryImpl(
@@ -26,7 +26,7 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    fun `getPopular with cache full`() = runTest{
+    fun `getPopular with cache full`() = runTest {
         //arrange
         fakeLocalSource.addAll(
             listOf(
@@ -60,7 +60,7 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    fun `getPopular with local empty and remote full`() = runTest{
+    fun `getPopular with local empty and remote full`() = runTest {
         //arrange
         fakeRemoteSource.addToList(
             listOf(
@@ -94,7 +94,7 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    fun `getPopular with error on operation`() = runTest{
+    fun `getPopular with error on operation`() = runTest {
         //act
         val resultEmptySources = repository.getPopularMovies()
 
@@ -106,7 +106,7 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    fun `getDetails functioning correctly`()=runTest{
+    fun `getDetails functioning correctly`() = runTest {
         //act
         val resultMovie = repository.getMovieDetails(1)
 
@@ -130,7 +130,7 @@ class MoviesRepositoryTest {
     }
 }
 
-class FakeMoviesLocalSource: MoviesLocalSource{
+class FakeMoviesLocalSource : MoviesLocalSource {
     private val fakeCacheMovies: MutableList<Movie> = mutableListOf()
 
     override fun addAll(movies: List<Movie>) {
@@ -147,10 +147,10 @@ class FakeMoviesLocalSource: MoviesLocalSource{
 
 }
 
-class FakeMoviesRemoteSource: MoviesRemoteSource{
+class FakeMoviesRemoteSource : MoviesRemoteSource {
     private val remoteMovies: MutableList<Movie> = mutableListOf()
 
-    fun addToList(listFake: List<Movie>){
+    fun addToList(listFake: List<Movie>) {
         remoteMovies.addAll(listFake)
     }
 

@@ -62,7 +62,7 @@ class GetPopularMoviesUseCaseTest {
     }
 
     @Test
-    fun `caso de uso con lista de peliculas vacia`() = runTest{
+    fun `caso de uso con lista de peliculas vacia`() = runTest {
         //arrange
         val emptyList: MutableList<Movie> = mutableListOf()
         fakeMoviesRepository.setMovies(emptyList)
