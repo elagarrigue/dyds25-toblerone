@@ -3,7 +3,6 @@ package data
 import edu.dyds.movies.data.MoviesRepositoryImpl
 import edu.dyds.movies.data.external.MoviesRemoteSource
 import edu.dyds.movies.data.local.MoviesLocalSource
-import edu.dyds.movies.data.local.MoviesLocalSourceImpl
 import edu.dyds.movies.domain.entity.Movie
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -13,31 +12,35 @@ import org.junit.jupiter.api.Test
 class MoviesRepositoryTest {
 
     private lateinit var repository: MoviesRepositoryImpl
-    private lateinit var localSource: MoviesLocalSource
+    private lateinit var fakeLocalSource: MoviesLocalSource
     private lateinit var fakeRemoteSource: FakeMoviesRemoteSource
 
     @BeforeEach
-    fun `set Up`(){
-        localSource= MoviesLocalSourceImpl()
-        fakeRemoteSource= FakeMoviesRemoteSource()
-        repository= MoviesRepositoryImpl(localSource,fakeRemoteSource)
+    fun `set up`(){
+        fakeLocalSource = FakeMoviesLocalSource()
+        fakeRemoteSource = FakeMoviesRemoteSource()
+        repository = MoviesRepositoryImpl(
+            fakeLocalSource,
+            fakeRemoteSource
+        )
     }
 
     @Test
     fun `getPopular with cache full`() = runTest{
         //arrange
-        localSource.addAll(
+        fakeLocalSource.addAll(
             listOf(
-                Movie(1,
+                Movie(
+                    1,
                     "cached",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    0.0,
-                    0.0
+                    "cached movie",
+                    "01/01/01",
+                    ".",
+                    ".",
+                    "cached",
+                    "en",
+                    7.0,
+                    9.0
                 )
             )
         )
@@ -57,20 +60,21 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    fun `getPopular with cache empty`() = runTest{
+    fun `getPopular with local empty and remote full`() = runTest{
         //arrange
         fakeRemoteSource.addToList(
             listOf(
-                Movie(1,
+                Movie(
+                    1,
                     "remote",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    0.0,
-                    0.0
+                    "remote movie",
+                    "01/01/01",
+                    ".",
+                    ".",
+                    "remote",
+                    "en",
+                    7.0,
+                    8.0
                 )
             )
         )
@@ -90,7 +94,7 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    fun `getPopular  error`() = runTest{
+    fun `getPopular with error on operation`() = runTest{
         //act
         val resultEmptySources = repository.getPopularMovies()
 
@@ -102,7 +106,7 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    fun `getDetails normal`()=runTest{
+    fun `getDetails functioning correctly`()=runTest{
         //act
         val resultMovie = repository.getMovieDetails(1)
 
@@ -114,7 +118,7 @@ class MoviesRepositoryTest {
     }
 
     @Test
-    fun `getDetails error`() = runTest {
+    fun `getDetails with error on operation`() = runTest {
         //act
         val movieNull = repository.getMovieDetails(500)
 
@@ -124,6 +128,23 @@ class MoviesRepositoryTest {
             movieNull
         )
     }
+}
+
+class FakeMoviesLocalSource: MoviesLocalSource{
+    private val fakeCacheMovies: MutableList<Movie> = mutableListOf()
+
+    override fun addAll(movies: List<Movie>) {
+        fakeCacheMovies.addAll(movies)
+    }
+
+    override fun isEmpty(): Boolean {
+        return fakeCacheMovies.isEmpty()
+    }
+
+    override fun getCacheMovies(): List<Movie> {
+        return fakeCacheMovies
+    }
+
 }
 
 class FakeMoviesRemoteSource: MoviesRemoteSource{
@@ -140,8 +161,19 @@ class FakeMoviesRemoteSource: MoviesRemoteSource{
     }
 
     override suspend fun getTMDBMovieDetails(id: Int): Movie {
-        if (id==1)
-            return Movie(1, "m1", "x", "x", "x", "x","x","x",7.0,8.0)
+        if (id == 1)
+            return Movie(
+                1,
+                "m1",
+                "x",
+                "x",
+                "x",
+                "x",
+                "x",
+                "x",
+                7.0,
+                8.0
+            )
         throw RuntimeException()
     }
 
