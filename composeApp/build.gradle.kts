@@ -9,9 +9,10 @@ plugins {
 
 kotlin {
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
+        val desktopTest by getting
 
         commonMain.dependencies {
             implementation(libs.kotlin.test)
@@ -38,12 +39,20 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
         }
+        desktopTest.dependencies {
+            implementation(kotlin("test-junit5"))
+            implementation("org.junit.jupiter:junit-jupiter:5.8.1")
+        }
     }
 
     sourceSets.commonMain {
         kotlin.srcDirs("build/generated/ksp/metadata")
     }
 
+}
+
+tasks.named<Test>("desktopTest") {
+    useJUnitPlatform()
 }
 
 
