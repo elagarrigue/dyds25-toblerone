@@ -11,7 +11,7 @@ class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, pr
     override suspend fun getPopularMovies(): List<Movie> {
         return try {
             if (moviesLocalSource.isEmpty()) {
-                val domainMovies = moviesRemoteSource.getTMDBPopularMovies()
+                val domainMovies = moviesRemoteSource.getPopularMovies()
                 moviesLocalSource.addAll(domainMovies)
             }
             moviesLocalSource.getCacheMovies()
@@ -21,11 +21,11 @@ class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, pr
         }
     }
 
-    override suspend fun getMovieDetails(id: Int): Movie? {
+    override suspend fun getMovieDetails(title: String): Movie? {
         return try {
-            moviesRemoteSource.getTMDBMovieDetails(id)
+            moviesRemoteSource.getMovieByTitle(title)
         } catch (e: Exception) {
-            println("Error fetching movie details for id $id: ${e.message}")
+            println("Error fetching movie details for title $title: ${e.message}")
             null
         }
     }
