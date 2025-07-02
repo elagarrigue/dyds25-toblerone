@@ -1,11 +1,14 @@
-package edu.dyds.movies.data.external
+package edu.dyds.movies.data.external.tmdb
 
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
+import edu.dyds.movies.data.external.MovieByTitleRemoteSource
+import edu.dyds.movies.data.external.PopularMoviesRemoteSource
 import edu.dyds.movies.domain.entity.Movie
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 
-class MoviesRemoteSourceImpl(private val tmdbHttpClient: HttpClient) : MoviesRemoteSource {
+class TMDBMoviesExternalSource(private val tmdbHttpClient: HttpClient) : PopularMoviesRemoteSource,
+    MovieByTitleRemoteSource {
 
     override suspend fun getPopularMovies(): List<Movie>  =
         getTMDBMovies().results.map { it.toDomainMovie() }
@@ -16,7 +19,7 @@ class MoviesRemoteSourceImpl(private val tmdbHttpClient: HttpClient) : MoviesRem
 
 
     private suspend fun getTMDBMovies(): RemoteResult =
-        tmdbHttpClient.get ( "/3/discover/movie?sort_by=popularity.desc" ).body()
+        tmdbHttpClient.get( "/3/discover/movie?sort_by=popularity.desc" ).body()
 
     private suspend fun getTMDBMovieDetails(title: String): RemoteResult =
         tmdbHttpClient.get("/3/search/movie?query=$title").body()

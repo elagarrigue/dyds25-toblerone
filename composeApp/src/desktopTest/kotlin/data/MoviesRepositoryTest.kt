@@ -1,7 +1,8 @@
 package data
 
 import edu.dyds.movies.data.MoviesRepositoryImpl
-import edu.dyds.movies.data.external.MoviesRemoteSource
+import edu.dyds.movies.data.external.MovieByTitleRemoteSource
+import edu.dyds.movies.data.external.PopularMoviesRemoteSource
 import edu.dyds.movies.data.local.MoviesLocalSource
 import edu.dyds.movies.domain.entity.Movie
 import kotlinx.coroutines.test.runTest
@@ -147,21 +148,21 @@ class FakeMoviesLocalSource : MoviesLocalSource {
 
 }
 
-class FakeMoviesRemoteSource : MoviesRemoteSource {
+class FakeMoviesRemoteSource : PopularMoviesRemoteSource, MovieByTitleRemoteSource {
     private val remoteMovies: MutableList<Movie> = mutableListOf()
 
     fun addToList(listFake: List<Movie>) {
         remoteMovies.addAll(listFake)
     }
 
-    override suspend fun getTMDBPopularMovies(): List<Movie> {
+    override suspend fun getPopularMovies(): List<Movie> {
         if (remoteMovies.isNotEmpty())
             return remoteMovies
         throw Exception()
     }
 
-    override suspend fun getTMDBMovieDetails(id: Int): Movie {
-        if (id == 1)
+    override suspend fun getMovieByTitle(title: String): Movie {
+        if (title == "m1")
             return Movie(
                 1,
                 "m1",

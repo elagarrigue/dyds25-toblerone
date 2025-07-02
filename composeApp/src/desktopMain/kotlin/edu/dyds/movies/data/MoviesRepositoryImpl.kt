@@ -1,12 +1,13 @@
 package edu.dyds.movies.data
 
-import edu.dyds.movies.data.external.MoviesRemoteSource
+import edu.dyds.movies.data.external.MovieByTitleRemoteSource
+import edu.dyds.movies.data.external.PopularMoviesRemoteSource
 import edu.dyds.movies.domain.entity.Movie
 import edu.dyds.movies.data.local.MoviesLocalSource
 import edu.dyds.movies.domain.repository.MoviesRepository
 
 
-class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, private val moviesRemoteSource: MoviesRemoteSource) : MoviesRepository {
+class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, private val moviesRemoteSource: PopularMoviesRemoteSource) : MoviesRepository {
 
     override suspend fun getPopularMovies(): List<Movie> {
         return try {
