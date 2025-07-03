@@ -6,18 +6,15 @@ import edu.dyds.movies.domain.entity.Movie
 
 
 class Broker(private val tmdbSource: TMDBMoviesExternalSource, private val omdbSource: OMDBMoviesExternalSource) :
-    MovieByTitleRemoteSource {
+    PopularMoviesRemoteSource, MovieByTitleRemoteSource {
+
+    override suspend fun getPopularMovies(): List<Movie> {
+        return tmdbSource.getPopularMovies()
+    }
     override suspend fun getMovieByTitle(title: String): Movie {
         val tmdbMovie = tmdbSource.getMovieByTitle(title)
         val omdbMovie = omdbSource.getMovieByTitle(title)
-        //TODO preguntar esto
-        val movie = when {
-            omdbMovie.overview!="No overview" && tmdbMovie.overview!="No overview" -> buildMovie(tmdbMovie, omdbMovie)
-            omdbMovie.overview!="No overview" -> tmdbMovie
-            tmdbMovie.overview!="No overview" -> omdbMovie
-            else -> {null}
-        }
-        return movie
+        return buildMovie(tmdbMovie,omdbMovie)
     }
 
     private fun buildMovie(
@@ -36,4 +33,6 @@ class Broker(private val tmdbSource: TMDBMoviesExternalSource, private val omdbS
             popularity = (tmdbMovie.popularity + omdbMovie.popularity) / 2.0,
             voteAverage = (tmdbMovie.voteAverage + omdbMovie.voteAverage) / 2.0
         )
+
+
 }

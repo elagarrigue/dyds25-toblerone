@@ -8,12 +8,12 @@ import edu.dyds.movies.data.local.MoviesLocalSource
 import edu.dyds.movies.domain.repository.MoviesRepository
 
 
-class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, private val moviesBroker: Broker) : MoviesRepository {
+class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, private val popularMoviesManager: PopularMoviesRemoteSource, private val movieByTitle: MovieByTitleRemoteSource ) : MoviesRepository {
 
     override suspend fun getPopularMovies(): List<Movie> {
         return try {
             if (moviesLocalSource.isEmpty()) {
-                val domainMovies = moviesBroker.getPopularMovies()
+                val domainMovies = popularMoviesManager.getPopularMovies()
                 moviesLocalSource.addAll(domainMovies)
             }
             moviesLocalSource.getCacheMovies()
@@ -25,7 +25,7 @@ class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, pr
 
     override suspend fun getMovieDetails(title: String): Movie? {
         return try {
-            moviesBroker.getMovieByTitle(title)
+            movieByTitle.getMovieByTitle(title)
         } catch (e: Exception) {
             println("Error fetching movie details for title $title: ${e.message}")
             null
