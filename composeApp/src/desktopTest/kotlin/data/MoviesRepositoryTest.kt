@@ -14,15 +14,16 @@ class MoviesRepositoryTest {
 
     private lateinit var repository: MoviesRepositoryImpl
     private lateinit var fakeLocalSource: MoviesLocalSource
-    private lateinit var fakeRemoteSource: FakeMoviesRemoteSource
+    private lateinit var fakeBroker: FakeBroker
 
     @BeforeEach
     fun `set up`() {
         fakeLocalSource = FakeMoviesLocalSource()
-        fakeRemoteSource = FakeMoviesRemoteSource()
+        fakeBroker = FakeBroker()
         repository = MoviesRepositoryImpl(
             fakeLocalSource,
-            fakeRemoteSource
+            fakeBroker,
+            fakeBroker
         )
     }
 
@@ -63,7 +64,7 @@ class MoviesRepositoryTest {
     @Test
     fun `getPopular with local empty and remote full`() = runTest {
         //arrange
-        fakeRemoteSource.addToList(
+        fakeBroker.addToList(
             listOf(
                 Movie(
                     1,
@@ -109,7 +110,7 @@ class MoviesRepositoryTest {
     @Test
     fun `getDetails functioning correctly`() = runTest {
         //act
-        val resultMovie = repository.getMovieDetails(1)
+        val resultMovie = repository.getMovieDetails("m1")
 
         //assert
         assertEquals(
@@ -121,7 +122,7 @@ class MoviesRepositoryTest {
     @Test
     fun `getDetails with error on operation`() = runTest {
         //act
-        val movieNull = repository.getMovieDetails(500)
+        val movieNull = repository.getMovieDetails("nonexistent movie")
 
         //assert
         assertEquals(
@@ -148,7 +149,7 @@ class FakeMoviesLocalSource : MoviesLocalSource {
 
 }
 
-class FakeMoviesRemoteSource : PopularMoviesRemoteSource, MovieByTitleRemoteSource {
+class FakeBroker : PopularMoviesRemoteSource, MovieByTitleRemoteSource {
     private val remoteMovies: MutableList<Movie> = mutableListOf()
 
     fun addToList(listFake: List<Movie>) {
