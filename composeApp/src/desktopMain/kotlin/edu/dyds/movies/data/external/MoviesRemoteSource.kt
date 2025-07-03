@@ -5,6 +5,7 @@ import edu.dyds.movies.domain.entity.Movie
 interface PopularMoviesRemoteSource {
     suspend fun getPopularMovies(): List<Movie>
 }
-interface MovieByTitleRemoteSource{
+
+interface MovieByTitleRemoteSource {
     suspend fun getMovieByTitle(title: String): Movie
 }

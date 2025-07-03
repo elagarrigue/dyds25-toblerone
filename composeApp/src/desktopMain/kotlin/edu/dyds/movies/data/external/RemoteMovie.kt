@@ -3,7 +3,6 @@ package edu.dyds.movies.data.external
 import edu.dyds.movies.domain.entity.Movie
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.hashCode
 
 @Serializable
 data class OMDBRemoteMovie(
@@ -27,7 +26,7 @@ data class OMDBRemoteMovie(
         backdrop = if (poster?.isNotEmpty() == true && poster != "N/A") poster else "",
         originalTitle = title ?: "Unknown Title",
         originalLanguage = language ?: "Unknown",
-        popularity = imdbRating ?.toDoubleOrNull() ?: 0.0,
+        popularity = imdbRating?.toDoubleOrNull() ?: 0.0,
         voteAverage = if (metaScore?.isNotEmpty() == true && metaScore != "N/A") metaScore.toDouble() else 0.0
     )
 
@@ -35,7 +34,7 @@ data class OMDBRemoteMovie(
 
 
 @Serializable
-data class RemoteMovie(
+data class TMDBRemoteMovie(
     val id: Int,
     val title: String,
     val overview: String,
@@ -48,7 +47,7 @@ data class RemoteMovie(
     @SerialName("vote_average") val voteAverage: Double? = null,
 
     ) {
-    fun toDomainMovie(): Movie {
+    fun fromTMDBtoDomainMovie(): Movie {
         return Movie(
             id = id,
             title = title,
@@ -58,9 +57,8 @@ data class RemoteMovie(
             backdrop = backdropPath.let { "https://image.tmdb.org/t/p/w780$it" },
             originalTitle = originalTitle,
             originalLanguage = originalLanguage,
-            popularity = popularity?: 0.0,
-            voteAverage = voteAverage?: 0.0
+            popularity = popularity ?: 0.0,
+            voteAverage = voteAverage ?: 0.0
         )
     }
 }
-

@@ -3,7 +3,7 @@ package edu.dyds.movies.di
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.dyds.movies.data.MoviesRepositoryImpl
-import edu.dyds.movies.data.external.Broker
+import edu.dyds.movies.data.external.BrokerExternalSource
 import edu.dyds.movies.data.external.omdb.OMDBMoviesExternalSource
 import edu.dyds.movies.data.external.tmdb.TMDBMoviesExternalSource
 import edu.dyds.movies.data.local.MoviesLocalSourceImpl
@@ -20,7 +20,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 private const val TMDB_API_KEY = "d18da1b5da16397619c688b0263cd281"
-private const val OMDB_API_KEY ="a96e7f78"
+private const val OMDB_API_KEY = "a96e7f78"
 
 object MoviesDependencyInjector {
 
@@ -66,8 +66,9 @@ object MoviesDependencyInjector {
     private val TMDBRemoteManager = TMDBMoviesExternalSource(tmdbHttpClient)
     private val OMDBRemoteManager = OMDBMoviesExternalSource(omdbHttpClient)
     private val cachedMovies = MoviesLocalSourceImpl()
-    private val broker = Broker(TMDBRemoteManager, TMDBRemoteManager,OMDBRemoteManager)
-    private val moviesRepository: MoviesRepository = MoviesRepositoryImpl(cachedMovies,broker,broker)
+    private val brokerExternalSource = BrokerExternalSource(TMDBRemoteManager, TMDBRemoteManager, OMDBRemoteManager)
+    private val moviesRepository: MoviesRepository =
+        MoviesRepositoryImpl(cachedMovies, brokerExternalSource, brokerExternalSource)
     private val getPopularMoviesUseCase = GetPopularMoviesUseCase(moviesRepository)
     private val getMovieDetailsUseCase = GetMovieDetailsUseCase(moviesRepository)
 
@@ -75,8 +76,9 @@ object MoviesDependencyInjector {
     fun getHomeViewModel(): HomeViewModel {
         return viewModel { HomeViewModel(getPopularMoviesUseCase) }
     }
+
     @Composable
-    fun getDetailViewModel(): DetailViewModel{
+    fun getDetailViewModel(): DetailViewModel {
         return viewModel { DetailViewModel(getMovieDetailsUseCase) }
     }
 }
