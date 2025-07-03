@@ -17,4 +17,5 @@ class OMDBMoviesExternalSource(
 
     private suspend fun getOMDBMovieDetails(title: String): OMDBRemoteMovie =
         omdbHttpClient.get("/?t=$title").body()
+
 }

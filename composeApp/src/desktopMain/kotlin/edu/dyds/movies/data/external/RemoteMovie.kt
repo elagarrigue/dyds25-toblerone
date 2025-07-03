@@ -7,28 +7,30 @@ import kotlin.hashCode
 
 @Serializable
 data class OMDBRemoteMovie(
-    @SerialName ("Title") val title: String,
-    @SerialName("Plot") val plot: String,
-    @SerialName( value = "Released") val released: String?,
-    @SerialName( value = "Year") val year: String,
-    @SerialName( value = "Poster") val poster: String,
-    @SerialName( value = "Language") val language: String,
-    @SerialName( value = "Metascore") val metaScore: String?,
-    val imdbRating: Double?,
-
-    ){
+    @SerialName("Title") val title: String? = null,
+    @SerialName("Plot") val plot: String? = null,
+    @SerialName("Released") val released: String? = null,
+    @SerialName("Year") val year: String? = null,
+    @SerialName("Poster") val poster: String? = null,
+    @SerialName("Language") val language: String? = null,
+    @SerialName("Metascore") val metaScore: String? = null,
+    val imdbRating: String? = null,
+    @SerialName("Response") val response: String? = null,
+    @SerialName("Error") val error: String? = null
+) {
     fun fromOMDBtoDomainMovie() = Movie(
-        id = title.hashCode(),
-        title = title,
-        overview = plot,
-        releaseDate = if (released?.isNotEmpty() == true && released != "N/A") released else year,
-        poster = poster,
-        backdrop = poster,
-        originalTitle = title,
-        originalLanguage = language,
-        popularity = imdbRating ?: 0.0,
+        id = title?.hashCode() ?: 0,
+        title = title ?: "Unknown Title",
+        overview = plot ?: "No plot available",
+        releaseDate = if (released?.isNotEmpty() == true && released != "N/A") released else (year ?: "Unknown"),
+        poster = if (poster?.isNotEmpty() == true && poster != "N/A") poster else "",
+        backdrop = if (poster?.isNotEmpty() == true && poster != "N/A") poster else "",
+        originalTitle = title ?: "Unknown Title",
+        originalLanguage = language ?: "Unknown",
+        popularity = imdbRating ?.toDoubleOrNull() ?: 0.0,
         voteAverage = if (metaScore?.isNotEmpty() == true && metaScore != "N/A") metaScore.toDouble() else 0.0
     )
+
 }
 
 
@@ -37,30 +39,27 @@ data class RemoteMovie(
     val id: Int,
     val title: String,
     val overview: String,
-    @SerialName("release_date") val releaseDate: String,
-    @SerialName("poster_path") val posterPath: String?,
-    @SerialName("backdrop_path") val backdropPath: String?,
+    @SerialName("release_date") val releaseDate: String? = null,
+    @SerialName("poster_path") val posterPath: String? = null,
+    @SerialName("backdrop_path") val backdropPath: String? = null,
     @SerialName("original_title") val originalTitle: String,
     @SerialName("original_language") val originalLanguage: String,
-    val popularity: Double,
-    @SerialName("vote_average") val voteAverage: Double,
+    val popularity: Double? = null,
+    @SerialName("vote_average") val voteAverage: Double? = null,
 
-    )
-
-{
+    ) {
     fun toDomainMovie(): Movie {
-        println(releaseDate)
         return Movie(
             id = id,
             title = title,
             overview = overview,
-            releaseDate = releaseDate ,
+            releaseDate = releaseDate ?: "",
             poster = "https://image.tmdb.org/t/p/w185$posterPath",
             backdrop = backdropPath.let { "https://image.tmdb.org/t/p/w780$it" },
             originalTitle = originalTitle,
             originalLanguage = originalLanguage,
-            popularity = popularity,
-            voteAverage = voteAverage
+            popularity = popularity?: 0.0,
+            voteAverage = voteAverage?: 0.0
         )
     }
 }

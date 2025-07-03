@@ -1,6 +1,5 @@
 package edu.dyds.movies.data
 
-import edu.dyds.movies.data.external.Broker
 import edu.dyds.movies.data.external.MovieByTitleRemoteSource
 import edu.dyds.movies.data.external.PopularMoviesRemoteSource
 import edu.dyds.movies.domain.entity.Movie
