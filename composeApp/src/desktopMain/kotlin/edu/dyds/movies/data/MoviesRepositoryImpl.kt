@@ -7,7 +7,11 @@ import edu.dyds.movies.data.local.MoviesLocalSource
 import edu.dyds.movies.domain.repository.MoviesRepository
 
 
-class MoviesRepositoryImpl (private val moviesLocalSource: MoviesLocalSource, private val popularMoviesManager: PopularMoviesRemoteSource, private val movieByTitle: MovieByTitleRemoteSource ) : MoviesRepository {
+class MoviesRepositoryImpl(
+    private val moviesLocalSource: MoviesLocalSource,
+    private val popularMoviesManager: PopularMoviesRemoteSource,
+    private val movieByTitle: MovieByTitleRemoteSource
+) : MoviesRepository {
 
     override suspend fun getPopularMovies(): List<Movie> {
         return try {

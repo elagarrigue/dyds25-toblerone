@@ -66,9 +66,9 @@ object MoviesDependencyInjector {
     private val TMDBRemoteManager = TMDBMoviesExternalSource(tmdbHttpClient)
     private val OMDBRemoteManager = OMDBMoviesExternalSource(omdbHttpClient)
     private val cachedMovies = MoviesLocalSourceImpl()
-    private val brokerExternalSource = BrokerExternalSource(TMDBRemoteManager, TMDBRemoteManager, OMDBRemoteManager)
+    private val brokerExternalSource = BrokerExternalSource(TMDBRemoteManager, OMDBRemoteManager)
     private val moviesRepository: MoviesRepository =
-        MoviesRepositoryImpl(cachedMovies, brokerExternalSource, brokerExternalSource)
+        MoviesRepositoryImpl(cachedMovies, TMDBRemoteManager, brokerExternalSource)
     private val getPopularMoviesUseCase = GetPopularMoviesUseCase(moviesRepository)
     private val getMovieDetailsUseCase = GetMovieDetailsUseCase(moviesRepository)
 

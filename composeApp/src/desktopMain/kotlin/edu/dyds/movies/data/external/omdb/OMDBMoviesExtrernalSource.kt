@@ -1,7 +1,6 @@
 package edu.dyds.movies.data.external.omdb
 
 import edu.dyds.movies.data.external.MovieByTitleRemoteSource
-import edu.dyds.movies.data.external.OMDBRemoteMovie
 
 import edu.dyds.movies.domain.entity.Movie
 import io.ktor.client .*

@@ -14,15 +14,17 @@ class MoviesRepositoryTest {
 
     private lateinit var repository: MoviesRepositoryImpl
     private lateinit var fakeLocalSource: MoviesLocalSource
-    private lateinit var fakeBroker: FakeBroker
+    private lateinit var fakeBroker: MovieByTitleRemoteSource
+    private lateinit var fakeRemoteSource: FakeMoviesRemoteSource
 
     @BeforeEach
     fun `set up`() {
         fakeLocalSource = FakeMoviesLocalSource()
         fakeBroker = FakeBroker()
+        fakeRemoteSource = FakeMoviesRemoteSource()
         repository = MoviesRepositoryImpl(
             fakeLocalSource,
-            fakeBroker,
+            fakeRemoteSource,
             fakeBroker
         )
     }
@@ -64,7 +66,7 @@ class MoviesRepositoryTest {
     @Test
     fun `getPopular with local empty and remote full`() = runTest {
         //arrange
-        fakeBroker.addToList(
+        fakeRemoteSource.addToList(
             listOf(
                 Movie(
                     1,
@@ -149,17 +151,11 @@ class FakeMoviesLocalSource : MoviesLocalSource {
 
 }
 
-class FakeBroker : PopularMoviesRemoteSource, MovieByTitleRemoteSource {
+class FakeBroker : MovieByTitleRemoteSource {
     private val remoteMovies: MutableList<Movie> = mutableListOf()
 
     fun addToList(listFake: List<Movie>) {
         remoteMovies.addAll(listFake)
-    }
-
-    override suspend fun getPopularMovies(): List<Movie> {
-        if (remoteMovies.isNotEmpty())
-            return remoteMovies
-        throw Exception()
     }
 
     override suspend fun getMovieByTitle(title: String): Movie {
@@ -177,6 +173,21 @@ class FakeBroker : PopularMoviesRemoteSource, MovieByTitleRemoteSource {
                 8.0
             )
         throw RuntimeException()
+    }
+
+}
+
+class FakeMoviesRemoteSource : PopularMoviesRemoteSource {
+    private val remoteMovies: MutableList<Movie> = mutableListOf()
+
+    fun addToList(listFake: List<Movie>) {
+        remoteMovies.addAll(listFake)
+    }
+
+    override suspend fun getPopularMovies(): List<Movie> {
+        if (remoteMovies.isNotEmpty())
+            return remoteMovies
+        throw Exception()
     }
 
 }

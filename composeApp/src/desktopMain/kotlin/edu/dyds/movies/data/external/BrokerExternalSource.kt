@@ -4,15 +4,10 @@ import edu.dyds.movies.domain.entity.Movie
 
 
 class BrokerExternalSource(
-    private val tmdbPopularSource: PopularMoviesRemoteSource,
     private val tmdbDetailSource: MovieByTitleRemoteSource,
     private val omdbSource: MovieByTitleRemoteSource
 ) :
-    PopularMoviesRemoteSource, MovieByTitleRemoteSource {
-
-    override suspend fun getPopularMovies(): List<Movie> {
-        return tmdbPopularSource.getPopularMovies()
-    }
+    MovieByTitleRemoteSource {
 
     override suspend fun getMovieByTitle(title: String): Movie {
         val tmdbMovie = tmdbDetailSource.getMovieByTitle(title)
@@ -36,6 +31,4 @@ class BrokerExternalSource(
             popularity = (tmdbMovie.popularity + omdbMovie.popularity) / 2.0,
             voteAverage = (tmdbMovie.voteAverage + omdbMovie.voteAverage) / 2.0
         )
-
-
 }

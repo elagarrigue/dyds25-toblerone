@@ -7,6 +7,8 @@ interface MovieDetailsUseCase {
     suspend operator fun invoke(title: String): Movie?
 }
 
-class GetMovieDetailsUseCase ( private val moviesRepository: MoviesRepository) : MovieDetailsUseCase {
-    override suspend operator fun invoke(title: String): Movie? { return moviesRepository.getMovieDetails(title) }
+class GetMovieDetailsUseCase(private val moviesRepository: MoviesRepository) : MovieDetailsUseCase {
+    override suspend operator fun invoke(title: String): Movie? {
+        return moviesRepository.getMovieDetails(title)
+    }
 }

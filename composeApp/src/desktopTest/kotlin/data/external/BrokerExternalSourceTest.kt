@@ -2,7 +2,6 @@ package data.external
 
 import edu.dyds.movies.data.external.BrokerExternalSource
 import edu.dyds.movies.data.external.MovieByTitleRemoteSource
-import edu.dyds.movies.data.external.PopularMoviesRemoteSource
 import edu.dyds.movies.domain.entity.Movie
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -12,27 +11,13 @@ import org.junit.jupiter.api.Test
 class BrokerTest {
     private lateinit var movieBrokerExternalSource: BrokerExternalSource
     private lateinit var fakeTMDBMovies: MovieByTitleRemoteSource
-    private lateinit var fakeTMDBPopular: PopularMoviesRemoteSource
     private lateinit var fakeOMDB: MovieByTitleRemoteSource
 
     @BeforeEach
     fun `set Up`() {
         fakeTMDBMovies = FakeTMDBSource()
-        fakeTMDBPopular = FakeTMDBSource()
         fakeOMDB = FakeOMDBSource()
-        movieBrokerExternalSource = BrokerExternalSource(fakeTMDBPopular, fakeTMDBMovies, fakeOMDB)
-    }
-
-    @Test
-    fun `getPopularMovies return full list`() = runTest {
-        //act
-        val movies = movieBrokerExternalSource.getPopularMovies()
-
-        //assert
-        assertEquals(
-            "F1",
-            movies.first().title
-        )
+        movieBrokerExternalSource = BrokerExternalSource(fakeTMDBMovies, fakeOMDB)
     }
 
     @Test
@@ -45,6 +30,7 @@ class BrokerTest {
             movies.overview
         )
     }
+
     @Test
     fun `getmovieByTitle only gets TMDB`() = runTest {
         //act
@@ -57,22 +43,7 @@ class BrokerTest {
     }
 }
 
-class FakeTMDBSource : PopularMoviesRemoteSource, MovieByTitleRemoteSource {
-    override suspend fun getPopularMovies(): List<Movie> {
-        val movie = Movie(
-            id = 1,
-            title = "F1",
-            overview = "F1 in TMDB",
-            releaseDate = "",
-            poster = "",
-            backdrop = "",
-            originalTitle = "",
-            originalLanguage = "",
-            popularity = 87.5,
-            voteAverage = 8.6
-        )
-        return listOf(movie)
-    }
+class FakeTMDBSource : MovieByTitleRemoteSource {
 
     override suspend fun getMovieByTitle(title: String): Movie {
         if (title == "Squid Game")
