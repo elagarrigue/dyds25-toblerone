@@ -9,10 +9,18 @@ class BrokerExternalSource(
 ) :
     MovieByTitleRemoteSource {
 
-    override suspend fun getMovieByTitle(title: String): Movie {
+    override suspend fun getMovieByTitle(title: String): Movie? {
         val tmdbMovie = tmdbDetailSource.getMovieByTitle(title)
         val omdbMovie = omdbSource.getMovieByTitle(title)
-        return buildMovie(tmdbMovie, omdbMovie)
+        return when {
+            tmdbMovie != null && omdbMovie != null -> buildMovie(tmdbMovie, omdbMovie)
+            tmdbMovie != null -> tmdbMovie.copy(overview = "TMDB: ${tmdbMovie.overview}")
+            omdbMovie != null -> omdbMovie.copy(overview = "OMDB: ${omdbMovie.overview}")
+            else -> {
+                throw IllegalArgumentException("No movie found for title: $title")
+            }
+        }
+
     }
 
     private fun buildMovie(
@@ -20,7 +28,7 @@ class BrokerExternalSource(
         omdbMovie: Movie
     ) =
         Movie(
-            id = tmdbMovie.id,
+            id = tmdbMovie.id ,
             title = tmdbMovie.title,
             overview = "TMDB: ${tmdbMovie.overview}\n\n OMDB: ${omdbMovie.overview}",
             releaseDate = tmdbMovie.releaseDate,

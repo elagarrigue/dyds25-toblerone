@@ -7,5 +7,5 @@ interface PopularMoviesRemoteSource {
 }
 
 interface MovieByTitleRemoteSource {
-    suspend fun getMovieByTitle(title: String): Movie
+    suspend fun getMovieByTitle(title: String): Movie?
 }
