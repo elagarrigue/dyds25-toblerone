@@ -9,48 +9,81 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class BrokerTest {
+class BrokerExternalSourceTest {
     private lateinit var movieBrokerExternalSource: BrokerExternalSource
-    private lateinit var fakeTMDBMovies: MovieByTitleRemoteSource
-    private lateinit var fakeOMDB: MovieByTitleRemoteSource
+    private lateinit var fakeTMDBRemoteSource: MovieByTitleRemoteSource
+    private lateinit var fakeOMDBRemoteSource: MovieByTitleRemoteSource
 
     @BeforeEach
     fun `set Up`() {
-        fakeTMDBMovies = FakeTMDBSource()
-        fakeOMDB = FakeOMDBSource()
-        movieBrokerExternalSource = BrokerExternalSource(fakeTMDBMovies, fakeOMDB)
+        fakeTMDBRemoteSource = FakeTMDBSource()
+        fakeOMDBRemoteSource = FakeOMDBSource()
+        movieBrokerExternalSource = BrokerExternalSource(fakeTMDBRemoteSource, fakeOMDBRemoteSource)
     }
 
     @Test
     fun `getmovieByTitle combines data`() = runTest {
         //act
-        val movies = movieBrokerExternalSource.getMovieByTitle("F1")
+        val movie = movieBrokerExternalSource.getMovieByTitle("F1")
         //assert
         assertEquals(
-            "TMDB: F1 in TMDB\n" + "\n" + " OMDB: F1 in OMDB",
-            movies?.overview
+            Movie(
+                id = 1,
+                title = "F1",
+                overview = "TMDB: F1 in TMDB\n" + "\n" + " OMDB: F1 in OMDB",
+                releaseDate = "",
+                poster = "",
+                backdrop = "",
+                originalTitle = "",
+                originalLanguage = "",
+                popularity = 87.5,
+                voteAverage = 8.6
+            ),
+            movie
         )
     }
 
     @Test
     fun `getmovieByTitle only gets TMDB`() = runTest {
         //act
-        val movies = movieBrokerExternalSource.getMovieByTitle("Squid Game")
+        val movie = movieBrokerExternalSource.getMovieByTitle("Squid Game")
         //assert
         assertEquals(
-            "TMDB: Squid Game idk",
-            movies?.overview
+            Movie(
+                id = 0,
+                title = "Squid Game",
+                overview = "TMDB: Squid Game idk",
+                releaseDate = "",
+                poster = "",
+                backdrop = "",
+                originalTitle = "",
+                originalLanguage = "",
+                popularity = 0.0,
+                voteAverage = 0.0
+            ),
+            movie
         )
     }
 
     @Test
     fun `getmovieByTitle only gets OMDB`() = runTest {
         //act
-        val movies = movieBrokerExternalSource.getMovieByTitle("Nine Queens")
+        val movie = movieBrokerExternalSource.getMovieByTitle("Nine Queens")
         //assert
         assertEquals(
-            "OMDB: Nine Queens in OMDB",
-            movies?.overview
+            Movie(
+                id = 2,
+                title = "Nine Queens",
+                overview = "OMDB: Nine Queens in OMDB",
+                releaseDate = "",
+                poster = "",
+                backdrop = "",
+                originalTitle = "",
+                originalLanguage = "",
+                popularity = 75.0,
+                voteAverage = 7.5
+            ),
+            movie
         )
     }
 
@@ -62,10 +95,63 @@ class BrokerTest {
         }
 
     }
+
+    @Test
+    fun `getMovieByTitle returns OMDB when TMDB throws exception`() = runTest {
+        movieBrokerExternalSource = BrokerExternalSource(ThrowingTMDBSource(), FakeOMDBSource())
+
+        val movie = movieBrokerExternalSource.getMovieByTitle("Nine Queens")
+
+        assertEquals(
+            Movie(
+                id = 2,
+                title = "Nine Queens",
+                overview = "OMDB: Nine Queens in OMDB",
+                releaseDate = "",
+                poster = "",
+                backdrop = "",
+                originalTitle = "",
+                originalLanguage = "",
+                popularity = 75.0,
+                voteAverage = 7.5
+            ),
+            movie
+        )
+    }
+
+    @Test
+    fun `getMovieByTitle returns TMDB when OMDB throws exception`() = runTest {
+        movieBrokerExternalSource = BrokerExternalSource(FakeTMDBSource(), ThrowingOMDBSource())
+
+        val movie = movieBrokerExternalSource.getMovieByTitle("Squid Game")
+
+        assertEquals(
+            Movie(
+                id = 0,
+                title = "Squid Game",
+                overview = "TMDB: Squid Game idk",
+                releaseDate = "",
+                poster = "",
+                backdrop = "",
+                originalTitle = "",
+                originalLanguage = "",
+                popularity = 0.0,
+                voteAverage = 0.0
+            ),
+            movie
+        )
+    }
+    @Test
+    fun `getMovieByTitle throws when both sources fail`() = runTest {
+        movieBrokerExternalSource = BrokerExternalSource(ThrowingTMDBSource(), ThrowingOMDBSource())
+
+        assertThrows<IllegalArgumentException> {
+            movieBrokerExternalSource.getMovieByTitle("Whatever")
+        }
+    }
 }
 
 class FakeTMDBSource : MovieByTitleRemoteSource {
-
     override suspend fun getMovieByTitle(title: String): Movie? {
         if (title == "Squid Game")
             return Movie(
@@ -102,8 +188,8 @@ class FakeTMDBSource : MovieByTitleRemoteSource {
 
 class FakeOMDBSource : MovieByTitleRemoteSource {
     override suspend fun getMovieByTitle(title: String): Movie? {
-        return when {
-            title == "F1" -> Movie(
+        return when (title) {
+            "F1" -> Movie(
                 id = 1,
                 title = "F1",
                 overview = "F1 in OMDB",
@@ -115,7 +201,7 @@ class FakeOMDBSource : MovieByTitleRemoteSource {
                 popularity = 87.5,
                 voteAverage = 8.6
             )
-            title == "Nine Queens" -> Movie(
+            "Nine Queens" -> Movie(
                 id = 2,
                 title = "Nine Queens",
                 overview = "Nine Queens in OMDB",
@@ -129,6 +215,17 @@ class FakeOMDBSource : MovieByTitleRemoteSource {
             )
             else -> null
         }
+    }
+}
 
+class ThrowingTMDBSource : MovieByTitleRemoteSource {
+    override suspend fun getMovieByTitle(title: String): Movie? {
+        throw RuntimeException("TMDB error")
+    }
+}
+
+class ThrowingOMDBSource : MovieByTitleRemoteSource {
+    override suspend fun getMovieByTitle(title: String): Movie? {
+        throw RuntimeException("OMDB error")
     }
 }

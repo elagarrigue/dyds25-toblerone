@@ -14,18 +14,18 @@ class MoviesRepositoryTest {
 
     private lateinit var repository: MoviesRepositoryImpl
     private lateinit var fakeLocalSource: MoviesLocalSource
-    private lateinit var fakeBroker: MovieByTitleRemoteSource
-    private lateinit var fakeRemoteSource: FakeMoviesRemoteSource
+    private lateinit var fakeMovieByTitleRemoteSource: MovieByTitleRemoteSource
+    private lateinit var fakeMoviesRemoteSource: FakeMoviesRemoteSource
 
     @BeforeEach
     fun `set up`() {
         fakeLocalSource = FakeMoviesLocalSource()
-        fakeBroker = FakeBroker()
-        fakeRemoteSource = FakeMoviesRemoteSource()
+        fakeMovieByTitleRemoteSource = FakeMovieRemoteSource()
+        fakeMoviesRemoteSource = FakeMoviesRemoteSource()
         repository = MoviesRepositoryImpl(
             fakeLocalSource,
-            fakeRemoteSource,
-            fakeBroker
+            fakeMoviesRemoteSource,
+            fakeMovieByTitleRemoteSource
         )
     }
 
@@ -66,7 +66,7 @@ class MoviesRepositoryTest {
     @Test
     fun `getPopular with local empty and remote full`() = runTest {
         //arrange
-        fakeRemoteSource.addToList(
+        fakeMoviesRemoteSource.addToList(
             listOf(
                 Movie(
                     1,
@@ -148,16 +148,9 @@ class FakeMoviesLocalSource : MoviesLocalSource {
     override fun getCacheMovies(): List<Movie> {
         return fakeCacheMovies
     }
-
 }
 
-class FakeBroker : MovieByTitleRemoteSource {
-    private val remoteMovies: MutableList<Movie> = mutableListOf()
-
-    fun addToList(listFake: List<Movie>) {
-        remoteMovies.addAll(listFake)
-    }
-
+class FakeMovieRemoteSource : MovieByTitleRemoteSource {
     override suspend fun getMovieByTitle(title: String): Movie {
         if (title == "m1")
             return Movie(
@@ -174,7 +167,6 @@ class FakeBroker : MovieByTitleRemoteSource {
             )
         throw RuntimeException()
     }
-
 }
 
 class FakeMoviesRemoteSource : PopularMoviesRemoteSource {
@@ -189,5 +181,4 @@ class FakeMoviesRemoteSource : PopularMoviesRemoteSource {
             return remoteMovies
         throw Exception()
     }
-
 }
