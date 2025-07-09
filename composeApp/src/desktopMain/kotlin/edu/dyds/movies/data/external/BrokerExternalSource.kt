@@ -10,18 +10,9 @@ class BrokerExternalSource(
     MovieByTitleRemoteSource {
 
     override suspend fun getMovieByTitle(title: String): Movie? {
-        val tmdbMovie = try {
-            tmdbDetailSource.getMovieByTitle(title)
-        } catch (e: Exception) {
-            println("TMDB error: ${e.message}")
-            null
-        }
-        val omdbMovie = try {
-            omdbSource.getMovieByTitle(title)
-        } catch (e: Exception) {
-            println("OMDB error: ${e.message}")
-            null
-        }
+        val tmdbMovie = runCatching { tmdbDetailSource.getMovieByTitle(title) }.getOrNull()
+        val omdbMovie = runCatching { omdbSource.getMovieByTitle(title) }.getOrNull()
+
         return when {
             tmdbMovie != null && omdbMovie != null -> buildMovie(tmdbMovie, omdbMovie)
             tmdbMovie != null -> tmdbMovie.copy(overview = "TMDB: ${tmdbMovie.overview}")
