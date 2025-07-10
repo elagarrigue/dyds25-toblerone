@@ -17,16 +17,16 @@ class DetailViewModelTest {
 
     val testDispatcher = UnconfinedTestDispatcher()
     private val getMovieDetailsUseCase = object : MovieDetailsUseCase {
-        override suspend fun invoke(id: Int): Movie? {
-            return if (id == 1)
+        override suspend fun invoke(title: String): Movie? {
+            return if (title == "Movie 1")
                 Movie(
-                    id,
-                    "Movie $id",
-                    "the movie $id overview",
+                    id = 1,
+                    "Movie 1",
+                    "the movie 1 overview",
                     "21/10/2023",
                     "poster url",
                     "backdrop url",
-                    "Original Movie $id",
+                    "Original Movie 1",
                     "en",
                     10.0,
                     8.0
@@ -59,7 +59,7 @@ class DetailViewModelTest {
         }
 
         // Act
-        detailViewModel.getMovieDetails(1)
+        detailViewModel.getMovieDetails("Movie 1")
         advanceUntilIdle()
 
         // Assert
@@ -95,7 +95,7 @@ class DetailViewModelTest {
         }
 
         // Act
-        detailViewModel.getMovieDetails(3)
+        detailViewModel.getMovieDetails("Nonexistent Movie")
         advanceUntilIdle()
 
         // Assert

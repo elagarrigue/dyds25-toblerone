@@ -1,7 +1,8 @@
 package data
 
 import edu.dyds.movies.data.MoviesRepositoryImpl
-import edu.dyds.movies.data.external.MoviesRemoteSource
+import edu.dyds.movies.data.external.MovieByTitleRemoteSource
+import edu.dyds.movies.data.external.PopularMoviesRemoteSource
 import edu.dyds.movies.data.local.MoviesLocalSource
 import edu.dyds.movies.domain.entity.Movie
 import kotlinx.coroutines.test.runTest
@@ -13,15 +14,18 @@ class MoviesRepositoryTest {
 
     private lateinit var repository: MoviesRepositoryImpl
     private lateinit var fakeLocalSource: MoviesLocalSource
-    private lateinit var fakeRemoteSource: FakeMoviesRemoteSource
+    private lateinit var fakeMovieByTitleRemoteSource: MovieByTitleRemoteSource
+    private lateinit var fakeMoviesRemoteSource: FakeMoviesRemoteSource
 
     @BeforeEach
     fun `set up`() {
         fakeLocalSource = FakeMoviesLocalSource()
-        fakeRemoteSource = FakeMoviesRemoteSource()
+        fakeMovieByTitleRemoteSource = FakeMovieRemoteSource()
+        fakeMoviesRemoteSource = FakeMoviesRemoteSource()
         repository = MoviesRepositoryImpl(
             fakeLocalSource,
-            fakeRemoteSource
+            fakeMoviesRemoteSource,
+            fakeMovieByTitleRemoteSource
         )
     }
 
@@ -62,7 +66,7 @@ class MoviesRepositoryTest {
     @Test
     fun `getPopular with local empty and remote full`() = runTest {
         //arrange
-        fakeRemoteSource.addToList(
+        fakeMoviesRemoteSource.addToList(
             listOf(
                 Movie(
                     1,
@@ -108,7 +112,7 @@ class MoviesRepositoryTest {
     @Test
     fun `getDetails functioning correctly`() = runTest {
         //act
-        val resultMovie = repository.getMovieDetails(1)
+        val resultMovie = repository.getMovieDetails("m1")
 
         //assert
         assertEquals(
@@ -120,7 +124,7 @@ class MoviesRepositoryTest {
     @Test
     fun `getDetails with error on operation`() = runTest {
         //act
-        val movieNull = repository.getMovieDetails(500)
+        val movieNull = repository.getMovieDetails("nonexistent movie")
 
         //assert
         assertEquals(
@@ -144,24 +148,11 @@ class FakeMoviesLocalSource : MoviesLocalSource {
     override fun getCacheMovies(): List<Movie> {
         return fakeCacheMovies
     }
-
 }
 
-class FakeMoviesRemoteSource : MoviesRemoteSource {
-    private val remoteMovies: MutableList<Movie> = mutableListOf()
-
-    fun addToList(listFake: List<Movie>) {
-        remoteMovies.addAll(listFake)
-    }
-
-    override suspend fun getTMDBPopularMovies(): List<Movie> {
-        if (remoteMovies.isNotEmpty())
-            return remoteMovies
-        throw Exception()
-    }
-
-    override suspend fun getTMDBMovieDetails(id: Int): Movie {
-        if (id == 1)
+class FakeMovieRemoteSource : MovieByTitleRemoteSource {
+    override suspend fun getMovieByTitle(title: String): Movie {
+        if (title == "m1")
             return Movie(
                 1,
                 "m1",
@@ -176,5 +167,18 @@ class FakeMoviesRemoteSource : MoviesRemoteSource {
             )
         throw RuntimeException()
     }
+}
 
+class FakeMoviesRemoteSource : PopularMoviesRemoteSource {
+    private val remoteMovies: MutableList<Movie> = mutableListOf()
+
+    fun addToList(listFake: List<Movie>) {
+        remoteMovies.addAll(listFake)
+    }
+
+    override suspend fun getPopularMovies(): List<Movie> {
+        if (remoteMovies.isNotEmpty())
+            return remoteMovies
+        throw Exception()
+    }
 }

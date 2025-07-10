@@ -38,7 +38,7 @@ class GetMovieDetailsUseCaseTest {
         fakeMoviesRepository.addMovie(expectedMovie)
 
         //act
-        val result = getMovieDetailsUseCase.invoke(1)
+        val result = getMovieDetailsUseCase.invoke("Test Movie")
 
         //assert
         assertEquals(expectedMovie, result)
@@ -47,7 +47,7 @@ class GetMovieDetailsUseCaseTest {
     @Test
     fun `caso de uso con id invalida retorna nulo`() = runTest {
         //act
-        val result = getMovieDetailsUseCase(999)
+        val result = getMovieDetailsUseCase("inexistent movie")
 
         //assert
         assertNull(result)
@@ -64,8 +64,8 @@ class GetMovieDetailsUseCaseTest {
             return movies
         }
 
-        override suspend fun getMovieDetails(id: Int): Movie? {
-            return movies.find { it.id == id }
+        override suspend fun getMovieDetails(title: String): Movie? {
+            return movies.find { it.title == title }
         }
 
         fun addMovie(movie: Movie) {

@@ -11,13 +11,12 @@ interface PopularMoviesUseCase {
 
 class GetPopularMoviesUseCase(private val moviesRepository: MoviesRepository) : PopularMoviesUseCase {
     override suspend operator fun invoke(): List<QualifiedMovie> {
-        return moviesRepository.getPopularMovies().sortedByDescending { it.voteAverage }.
-            map { movie ->
-                QualifiedMovie(
-                    movie = movie,
-                    isGoodMovie = movie.voteAverage >= MIN_VOTE_AVERAGE
-                )
-            }
+        return moviesRepository.getPopularMovies().sortedByDescending { it.voteAverage }.map { movie ->
+            QualifiedMovie(
+                movie = movie,
+                isGoodMovie = movie.voteAverage >= MIN_VOTE_AVERAGE
+            )
+        }
     }
 
 }
